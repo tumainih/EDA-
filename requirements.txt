@@ -1,8 +1,9 @@
 streamlit
 pandas
 numpy
-seaborn
-matplotlib
-scikit-learn
-openpyxl
 plotly
+scikit-learn
+scipy
+openpyxl
+pyreadstat
+XLSX2csv

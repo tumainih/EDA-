@@ -41,19 +41,27 @@ def clean_data(df):
 
 def get_data_summary(df, cleaned_df):
     """
-    Returns a brief dictionary of cleaning operations performed.
+    Returns a comprehensive dictionary of cleaning operations and quality findings.
     """
     original_rows, original_cols = df.shape
     new_rows, new_cols = cleaned_df.shape
     
-    missing_before = df.isnull().sum().sum()
-    missing_after = cleaned_df.isnull().sum().sum()
+    missing_before = df.isnull().sum()
+    missing_total = missing_before.sum()
     
-    duplicates_dropped = original_rows - new_rows
+    # Identify constant or near-constant columns
+    constant_cols = [col for col in df.columns if df[col].nunique() <= 1]
+    
+    # Data Quality Metrics
+    duplicates = df.duplicated().sum()
     
     return {
-        "original_shape": f"{original_rows} rows, {original_cols} columns",
-        "new_shape": f"{new_rows} rows, {new_cols} columns",
-        "missing_values_handled": missing_before - missing_after,
-        "duplicates_dropped": duplicates_dropped
+        "original_shape": { "rows": original_rows, "cols": original_cols },
+        "new_shape": { "rows": new_rows, "cols": new_cols },
+        "total_missing_before": int(missing_total),
+        "total_missing_after": int(cleaned_df.isnull().sum().sum()),
+        "duplicates_found": int(duplicates),
+        "constant_columns_found": constant_cols,
+        "detail_missing": missing_before[missing_before > 0].to_dict(),
+        "cleaning_status": "Optimization Successful" if new_rows > 0 else "Analysis Impaired"
     }
